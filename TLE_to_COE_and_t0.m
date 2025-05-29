@@ -1,4 +1,4 @@
-function [coe, year, day, Me, n] = TLE_to_COE_and_t0(file_name)
+function [coe, year, day_of_epoch, Me, n] = TLE_to_COE_and_t0(file_name)
 %{
   TLE_to_COE_and_t0 function reads the TLE file involving the TLE data and
   converts this TLE data to classical orbital elements (COE) and the
@@ -15,7 +15,7 @@ function [coe, year, day, Me, n] = TLE_to_COE_and_t0(file_name)
     coe              - Classical orbital elements [h,i,Omega,e,omega,theta]
                        of the TLE data
     year             - Year for the TLE epoch
-    day              - Day with its fraction for the TLE epoch
+    day_of_epoch     - Day with its fraction for the TLE epoch
     Me               - Mean anomaly of the TLE epoch
     n                - Mean motion of the TLE data
     
@@ -86,17 +86,17 @@ end
 % fraction. Then, the day is converted to month and day of the month.
 % Finally, the day fraction is converted to the time in day as hour, 
 % minutes, and seconds.
-year    = 2000 + (epoch - mod(epoch,1000))/1000;
-day     = mod(epoch,1000);
+year             = 2000 + (epoch - mod(epoch,1000))/1000;
+day_of_epoch     = mod(epoch,1000);
 
-datetime        = datetime(year, 1, 1) + days(day - 1);
-month           = month(datettime);
+datetime        = datetime(year, 1, 1) + days(day_of_epoch - 1);
+month_of_year   = month(datetime);
 day_of_month    = day(datetime);
 
-time    = day - mod(day,1);
-hour    = time*24;
-min     = time*24*60 - time*24;
-sec     = time*24*3600 - time*24*60;
+time    = day_of_epoch - mod(day_of_epoch,1);
+hour    = time*24 - mod(time*24,1);
+min     = time*24*60 - hour*60 - mod(time*24*60,1);
+sec     = time*24*60*60 - hour*60*60 - min*60 - mod(time*24*60*60,1);
 
 % Classical orbital elements. Note that the unit of the mean motion is
 % rad/s and all angles are in radians.
