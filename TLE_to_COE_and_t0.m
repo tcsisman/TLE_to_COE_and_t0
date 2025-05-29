@@ -12,20 +12,12 @@ function [coe, year, day, Me, n] = TLE_to_COE_and_t0(file_name)
 
   For the output, all angular quantities are in radians.
 
-    coe0             - Classical orbital elements [h,i,Omega,e,omega,theta]
+    coe              - Classical orbital elements [h,i,Omega,e,omega,theta]
                        of the TLE data
     year             - Year for the TLE epoch
     day              - Day with its fraction for the TLE epoch
     Me               - Mean anomaly of the TLE epoch
     n                - Mean motion of the TLE data
-    Observation_Site - Involves east longitude, latitude and altitude of
-                       the observation site
-    date             - Date of the instant
-    UT               - Universal time of the instant
-    EL               - East longitude of the observation site in degrees
-    Lat              - Latitude of the observation site in degrees
-    lstOS            - Sidereal time of the observation site in degrees
-    H                - Altitude of the observation site in km
     
   User M-function required : None
   User subfunction required: None
@@ -54,8 +46,8 @@ fclose(fileID);
 degToRad = pi/180.0;
 
 epoch = Line1{4};
-n0dot = 2.0*Line1{5};
-n0doubledot = 6.0*Line1{6}*10.^Line1{7};
+ndot = 2.0*Line1{5};
+ndoubledot = 6.0*Line1{6}*10.^Line1{7};
 Bstar = Line1{8};
 i = Line2{3}*degToRad;
 Omega = Line2{4}*degToRad;
@@ -90,10 +82,21 @@ else
 end
 
 % Epoch represents the Universal Time (solar time at Greenwich). Below, the
-% epoch is converted to the year, the day of the year with its day
-% fraction:
-year = 2000 + (epoch - mod(epoch,1000))/1000;
-day = mod(epoch,1000);
+% epoch is first converted to the year, the day of the year with its day
+% fraction. Then, the day is converted to month and day of the month.
+% Finally, the day fraction is converted to the time in day as hour, 
+% minutes, and seconds.
+year    = 2000 + (epoch - mod(epoch,1000))/1000;
+day     = mod(epoch,1000);
+
+datetime        = datetime(year, 1, 1) + days(day - 1);
+month           = month(datettime);
+day_of_month    = day(datetime);
+
+time    = day - mod(day,1);
+hour    = time*24;
+min     = time*24*60 - time*24;
+sec     = time*24*3600 - time*24*60;
 
 % Classical orbital elements. Note that the unit of the mean motion is
 % rad/s and all angles are in radians.
