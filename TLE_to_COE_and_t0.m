@@ -93,7 +93,7 @@ dt              = datetime(year, 1, 1) + days(day_of_epoch - 1);
 month_of_year   = month(dt);
 day_of_month    = day(dt);
 
-time    = day_of_epoch - mod(day_of_epoch,1);
+time    = mod(day_of_epoch,1);
 hour    = time*24 - mod(time*24,1);
 min     = time*24*60 - hour*60 - mod(time*24*60,1);
 sec     = time*24*60*60 - hour*60*60 - min*60 - mod(time*24*60*60,1);
