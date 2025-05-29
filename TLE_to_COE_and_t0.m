@@ -89,7 +89,7 @@ end
 year             = 2000 + (epoch - mod(epoch,1000))/1000;
 day_of_epoch     = mod(epoch,1000);
 
-dt              = dt(year, 1, 1) + days(day_of_epoch - 1);
+dt              = datetime(year, 1, 1) + days(day_of_epoch - 1);
 month_of_year   = month(dt);
 day_of_month    = day(dt);
 
